@@ -15,7 +15,7 @@ namespace SquishCompany
         public static void LoadGeneralFrom(ref ConfigFile config)
         {
             squishMellowPrice   = config.Bind<int>("Scrap", "SquishMellowPrice", 15, "How much does SquishMellow cost?");
-            squishMellowRarity  = config.Bind<int>("Scrap", "SquishMellowRarity", 5, "How much does SquishMellow spawn, higher = more common");
+            squishMellowRarity  = config.Bind<int>("Scrap", "SquishMellowRarity", 40, "How much does SquishMellow spawn, higher = more common");
             squishMellowEnabled = config.Bind<bool>("Scrap", "SquishMellowEnabled", true, "Is SquishMellow enabled?");
         }
 

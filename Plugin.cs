@@ -122,7 +122,6 @@ namespace SquishCompany
         public static void RegisterItem(CustomItemData customItemData_)
         {
             if (!customItemData_.enabled) return;
-            customItemData_.scrapRarity = 10;
 
             logger.LogInfo($"Attempting to load {customItemData_.name} at {customItemData_.itemPath}");
 

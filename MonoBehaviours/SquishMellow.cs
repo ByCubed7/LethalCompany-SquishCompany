@@ -25,7 +25,7 @@ namespace SquishCompany.MonoBehaviours
         private System.Random noisemakerRandom;
 
         // The interval of sound broadcasts (alerts dogs, ect)
-        private float noiseInterval = 3f;
+        private float noiseInterval = 1f;
 
         public NetworkVariable<bool> isPlayingMusic = new NetworkVariable<bool>(
             true, 
