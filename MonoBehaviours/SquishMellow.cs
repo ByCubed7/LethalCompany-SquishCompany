@@ -104,14 +104,21 @@ namespace SquishCompany.MonoBehaviours
             base.ItemInteractLeftRight(right);
 
             Debug.Log("ItemInteractLeftRight");
+            if (right) return;
             if (!IsOwner) return;
-            Debug.Log("IsOwner");
+            Debug.Log("Running");
 
             // toggle music
             isPlayingMusic.Value = !isPlayingMusic.Value;
         }
 
-        int timesPlayedWithoutTurningOff = 0;
+        public override void InteractItem()
+        {
+            base.InteractItem();
+
+        }
+
+        //int timesPlayedWithoutTurningOff = 0;
         public override void Update()
         {
             base.Update();
@@ -120,7 +127,7 @@ namespace SquishCompany.MonoBehaviours
             {
                 if (!musicAudio.isPlaying)
                 {
-                    musicAudio.Play();
+                    //musicAudio.Play();
                     //musicAudioFar?.Play();
                 }
 
@@ -136,7 +143,7 @@ namespace SquishCompany.MonoBehaviours
                 if (noiseInterval <= 0f)
                 {
                     noiseInterval = 3f;
-                    timesPlayedWithoutTurningOff++;
+                    //timesPlayedWithoutTurningOff++;
                     BroadcastAudioSource(noiseAudio, isInShipRoom);
                 }
                 else
@@ -146,11 +153,11 @@ namespace SquishCompany.MonoBehaviours
             }
             else
             {
-                timesPlayedWithoutTurningOff = 0;
+                //timesPlayedWithoutTurningOff = 0;
                 //danceAnimator.Play("Idle");
                 if (musicAudio.isPlaying)
                 {
-                    musicAudio.Pause();
+                    //musicAudio.Pause();
                     //musicAudioFar?.Pause();
                 }
             }

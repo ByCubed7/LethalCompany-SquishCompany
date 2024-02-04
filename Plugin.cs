@@ -1,19 +1,12 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
-using LethalLib.Extras;
-using LethalLib.Modules;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using Unity.Netcode;
 using BepInEx.Configuration;
-using Unity.Netcode.Components;
 using SquishCompany.MonoBehaviours;
 using SquishCompany.Extensions;
 
@@ -32,9 +25,6 @@ namespace SquishCompany
 
         private static Plugin Instance;
 
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        // Config 
-
         public static ConfigFile GeneralConfig;
         public static ConfigFile VolumeConfig;
 
@@ -50,44 +40,21 @@ namespace SquishCompany
             logger.LogInfo("Loading general configs.");
             GeneralConfig = new ConfigFile($"{Paths.ConfigPath}\\{modName}.cfg", true);
             VolumeConfig = new ConfigFile($"{Paths.ConfigPath}\\{modName}.AudioVolume.cfg", true);
-            SquishConfig.LoadGeneralFrom(ref GeneralConfig);
 
-            //logger.LogInfo("Removing default items.");
-            //foreach (var item in Items.scrapItems)
-           //     Items.RemoveScrapFromLevels(item.origItem, Levels.LevelTypes.All);
-
-            LoadAllCustomItems();
+            LoadAssetBundle();
+            InitCustomItems();
+            LoadAndRegisterAllItems();
 
             logger.LogInfo("Loading volume configs.");
-            SquishConfig.LoadVolumeFrom(ref VolumeConfig, Prefabs, CustomItemDatas);
-
+            SquishConfig.LoadVolumeFrom(VolumeConfig, CustomItems);
 
             harmony.PatchAll(typeof(Plugin));
         }
 
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        // Main Assets
 
-        public static AssetBundle MainAssets
-        {
-            get {
-                if (_mainAssets == null)
-                {
-                    _mainAssets = LoadAssetBundle();
-                    logger.LogInfo("Loaded asset bundle");
-                } 
-                return _mainAssets;
-            }
-        }
-        private static AssetBundle _mainAssets;
-
-        public static void DEBUG_ASSETBUNDLE()
-        {
-            logger.LogInfo($"All assets:");
-            foreach (string name in MainAssets.GetAllAssetNames())
-                logger.LogInfo($"  - {name}");
-            
-        }
-
+        public static AssetBundle MainAssets { get; private set; }
         public static AssetBundle LoadAssetBundle()
         {
             string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -97,66 +64,44 @@ namespace SquishCompany
             if (assets == null) logger.LogError("Failed to load custom assets."); // ManualLogSource for your plugin
             return assets;
         }
-
-        public static Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
-        public static Dictionary<string, CustomItemData> CustomItemDatas = new Dictionary<string, CustomItemData>();
-        public static void LoadAllCustomItems()
+        public static void DEBUG_ASSETBUNDLE()
         {
-            List<CustomItemData> customItems = new List<CustomItemData>()
+            logger.LogInfo($"All assets:");
+            foreach (string name in MainAssets.GetAllAssetNames())
+                logger.LogInfo($"  - {name}");
+        }
+
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        // Custom Items
+
+        // All of the items, enabled or not
+        public static List<CustomItemData> CustomItems = new List<CustomItemData>();
+        public static void InitCustomItems()
+        {
+            CustomItems = new List<CustomItemData>()
             {
                 new CustomItemData("SquishMellow")
-                    .SetEnabled(SquishConfig.squishMellowEnabled.Value)
-                    .MakeScrap(SquishConfig.squishMellowPrice.Value, SquishConfig.squishMellowRarity.Value)
                     .SetMonoBehaviour<SquishMellow>()
+                    .BindEnabled(GeneralConfig, true)
+                    .BindScrap(GeneralConfig, 15, 40)
             };
 
-            foreach (CustomItemData itemData in customItems)
-                RegisterItem(itemData);
-
-            foreach (CustomItemData itemData in customItems)
-                CustomItemDatas.Add(itemData.name, itemData);
-
-            logger.LogInfo("Custom items loaded!");
+            logger.LogInfo("Custom items initialized!");
         }
 
-        public static void RegisterItem(CustomItemData customItemData_)
+        public static Dictionary<string, CustomItemData> CustomItemDatas = new Dictionary<string, CustomItemData>();
+        public static void LoadAndRegisterAllItems()
         {
-            if (!customItemData_.enabled) return;
-
-            logger.LogInfo($"Attempting to load {customItemData_.name} at {customItemData_.itemPath}");
-
-            Item itemAsset = MainAssets.LoadAsset<Item>(customItemData_.itemPath);
-
-            if (itemAsset != null) logger.LogInfo($"Loaded!");
-            else logger.LogError($"Failed to load item {customItemData_.itemPath} from asset!!");
-            if (itemAsset.spawnPrefab == null) logger.LogError($"Items spawnPrefab is null!");
-
-            itemAsset.spawnPrefab.EnsureNetworkTransform();
-            itemAsset.spawnPrefab.OverridePhysicsPropWith(customItemData_.monoBehaviour);
-
-            LethalLib.Modules.Utilities.FixMixerGroups(itemAsset.spawnPrefab);
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemAsset.spawnPrefab);
-
-            Prefabs.Add(customItemData_.name, itemAsset.spawnPrefab);
-
-            // NOTE: Can items not be both buyable and scrap?
-            if (customItemData_.IsBuyable)
+            foreach (CustomItemData itemData in CustomItems)
             {
-                logger.LogInfo($"Registering shop item {customItemData_.name} with price {customItemData_.buyValue}");
-                Items.RegisterShopItem(itemAsset, null, null, MainAssets.LoadAsset<TerminalNode>(customItemData_.infoPath), customItemData_.buyValue);
-            }
-            else if (customItemData_.IsScrap)
-            {
-                logger.LogInfo($"Registering scrap item {customItemData_.name}");
-                Items.RegisterScrap(itemAsset, customItemData_.scrapRarity, customItemData_.scrapLevelFlags);
-            }
-            else
-            {
-                logger.LogInfo($"Registering item {customItemData_.name}");
-                Items.RegisterItem(itemAsset);
+                if (!itemData.Enabled) continue;
+
+                itemData.LoadAssetFrom(MainAssets);
+                itemData.Register();
+
+                CustomItemDatas.Add(itemData.name, itemData);
             }
         }
-
-
     }
 }

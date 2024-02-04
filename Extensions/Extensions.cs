@@ -38,52 +38,6 @@ namespace SquishCompany.Extensions
             return true;
         }
 
-
-        //static public void OverridePhysicsPropWith(this PhysicsProp prop, PhysicsProp component)
-        //{
-        //    // I hate this, but nothing tells me any other way of injecting our own custom GrabbableObject
-        //    // -> Need to override GrabbableObject methods
-        //    // -> Cant include scripts in .asset files and therefore prefabs
-        //    // -> No way of accessing events
-        //    // ect..
-
-        //    // There's prob a much better way of doing this using reflection but this works for now :thisisfine:
-        //    component.grabbable = prop.grabbable;
-        //    component.isHeld = prop.isHeld;
-        //    component.isHeldByEnemy = prop.isHeldByEnemy;
-        //    component.deactivated = prop.deactivated;
-        //    component.parentObject = prop.parentObject;
-        //    component.targetFloorPosition = prop.targetFloorPosition;
-        //    component.startFallingPosition = prop.startFallingPosition;
-        //    component.floorYRot = prop.floorYRot;
-        //    component.fallTime = prop.fallTime;
-        //    component.hasHitGround = prop.hasHitGround;
-        //    component.scrapValue = prop.scrapValue;
-        //    component.itemUsedUp = prop.itemUsedUp;
-        //    component.playerHeldBy = prop.playerHeldBy;
-        //    component.isPocketed = prop.isPocketed;
-        //    component.isBeingUsed = prop.isBeingUsed;
-        //    component.isInElevator = prop.isInElevator;
-        //    component.isInShipRoom = prop.isInShipRoom;
-        //    component.isInFactory = prop.isInFactory;
-        //    component.useCooldown = prop.useCooldown;
-        //    component.currentUseCooldown = prop.currentUseCooldown;
-        //    component.itemProperties = prop.itemProperties;
-        //    component.insertedBattery = prop.insertedBattery;
-        //    component.customGrabTooltip = prop.customGrabTooltip;
-        //    component.propBody = prop.propBody;
-        //    component.propColliders = prop.propColliders;
-        //    component.originalScale = prop.originalScale;
-        //    component.wasOwnerLastFrame = prop.wasOwnerLastFrame;
-        //    component.mainObjectRenderer = prop.mainObjectRenderer;
-        //    component.scrapPersistedThroughRounds = prop.scrapPersistedThroughRounds;
-        //    component.heldByPlayerOnServer = prop.heldByPlayerOnServer;
-        //    component.radarIcon = prop.radarIcon;
-        //    component.reachedFloorTarget = prop.reachedFloorTarget;
-        //    component.grabbableToEnemies = prop.grabbableToEnemies;
-        //    Object.Destroy(prop);
-        //}
-
         static public void OverridePhysicsPropWith<T>(this GameObject gameObject) 
             where T : PhysicsProp
                 => gameObject.OverridePhysicsPropWith(typeof(T));
