@@ -37,8 +37,11 @@ namespace SquishCompany
         {
             name = name_;
 
-            itemPath = $"Assets/Custom/{Plugin.modName}/Items/{name}/{name}.asset".ToLower();
-            infoPath = $"Assets/Custom/{Plugin.modName}/Items/{name}/{name}Info.asset".ToLower();
+            // BUG: Sometimes path can be .prefab or .asset
+            // TODO: We can find the prefab/asset based off of the path and name anyway
+            //      So it does not need to be hard coded
+            itemPath = System.IO.Path.Combine("Assets", "Custom", Plugin.modName, "Items", name, $"{name}.asset");
+            //infoPath = $"Assets/Custom/{Plugin.modName}/Items/{name}/{name}Info.asset".ToLower();
 
             scrapValue = 0;
             scrapRarity = 0;
@@ -147,11 +150,17 @@ namespace SquishCompany
             if (mainAssets is null)
                 Plugin.logger.LogError($"Main Assets is null!");
 
+            if (!mainAssets.Contains(itemPath))
+                Plugin.logger.LogError($"Main Assets does not contain item path {itemPath}!");
+
             ItemAsset = mainAssets.LoadAsset<Item>(itemPath);
 
             // Check asset loaded correctly
             if (ItemAsset is null)
+            {
                 Plugin.logger.LogError($"Failed to load item {itemPath} from asset!!");
+                Plugin.DEBUG_ASSETBUNDLE();
+            }
 
             // Prefab => ItemAsset.spawnPrefab
             if (Prefab is null)
