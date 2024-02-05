@@ -18,7 +18,7 @@ namespace SquishCompany
     {
         public const string modGUID = "ByCubed7.SquishCompany";
         public const string modName = "SquishCompany";
-        public const string modVersion = "0.0.1";
+        public const string modVersion = "0.0.4";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         internal static ManualLogSource logger;
