@@ -41,7 +41,7 @@ namespace SquishCompany
             GeneralConfig = new ConfigFile($"{Paths.ConfigPath}\\{modName}.cfg", true);
             VolumeConfig = new ConfigFile($"{Paths.ConfigPath}\\{modName}.AudioVolume.cfg", true);
 
-            LoadAssetBundle();
+            MainAssets = LoadAssetBundle();
             InitCustomItems();
             LoadAndRegisterAllItems();
 

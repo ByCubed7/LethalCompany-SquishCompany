@@ -10,9 +10,9 @@ namespace SquishCompany.MonoBehaviours
     {
         static public void BroadcastAudioSource(AudioSource audiosource, bool isInShipRoom = false)
         {
-            float volume = Mathf.Sqrt(audiosource.maxDistance * audiosource.volume);
-            Plugin.logger.LogInfo($"Playing {audiosource.name} at {volume} volume");
+            float volume = Mathf.Sqrt(audiosource.maxDistance * audiosource.volume) * 2;
             RoundManager.Instance.PlayAudibleNoise(audiosource.transform.position, volume, 0.5f, 0, isInShipRoom);
+            //Plugin.logger.LogInfo($"Playing {audiosource.name} at {volume} volume");
         }
 
         public virtual void DEBUG_PRINT_STATE()

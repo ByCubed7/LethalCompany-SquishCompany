@@ -7,11 +7,6 @@ namespace SquishCompany
 {
     public class SquishConfig
     {
-        // SquishMellow
-        public static ConfigEntry<int> squishMellowPrice;
-        public static ConfigEntry<int> squishMellowRarity;
-        public static ConfigEntry<bool> squishMellowEnabled;
-
         /// <summary>
         /// Registers all of the audio components volumes in the audio config.
         /// This MUST be called after all of the item assets have been loaded.

@@ -143,6 +143,9 @@ namespace SquishCompany
         public void LoadAssetFrom(UnityEngine.AssetBundle mainAssets)
         {
             Plugin.logger.LogInfo($"Attempting to load {name} at {itemPath}");
+            
+            if (mainAssets is null)
+                Plugin.logger.LogError($"Main Assets is null!");
 
             ItemAsset = mainAssets.LoadAsset<Item>(itemPath);
 

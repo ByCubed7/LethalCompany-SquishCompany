@@ -127,7 +127,7 @@ namespace SquishCompany.MonoBehaviours
             {
                 if (!musicAudio.isPlaying)
                 {
-                    //musicAudio.Play();
+                    musicAudio.Play();
                     //musicAudioFar?.Play();
                 }
 
@@ -157,7 +157,7 @@ namespace SquishCompany.MonoBehaviours
                 //danceAnimator.Play("Idle");
                 if (musicAudio.isPlaying)
                 {
-                    //musicAudio.Pause();
+                    musicAudio.Pause();
                     //musicAudioFar?.Pause();
                 }
             }
